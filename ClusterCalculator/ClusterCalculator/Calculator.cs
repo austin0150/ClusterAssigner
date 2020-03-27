@@ -28,6 +28,9 @@ namespace ClusterCalculator
             }
         }
 
+        /// <summary>
+        /// Writes the new record CSV data to file
+        /// </summary>
         public void OutputData()
         {
             string tempLine;
@@ -44,6 +47,9 @@ namespace ClusterCalculator
             File.WriteAllLines(@".\Results.csv", lines);
         }
 
+        /// <summary>
+        /// Loads the records from the CSV into memory
+        /// </summary>
         public void LoadRecords()
         {
             string[] lines;
@@ -77,6 +83,9 @@ namespace ClusterCalculator
             }
         }
 
+        /// <summary>
+        /// Loads the cluster centers from the CSV into memory
+        /// </summary>
         public void LoadCenters()
         {
             string[] lines;
@@ -101,6 +110,10 @@ namespace ClusterCalculator
             }
         }
 
+        /// <summary>
+        /// Assigns the correct cluster to the given Record
+        /// </summary>
+        /// <param name="record"></param>
         public void ChooseCluster(Record record)
         {
             double SmallestDistance = int.MaxValue;
@@ -122,6 +135,15 @@ namespace ClusterCalculator
             return;
         }
 
+        /// <summary>
+        /// Takes 2 geographic coordinates and returns the distance between them in meters
+        /// part of this function was taken from : https://stackoverflow.com/questions/639695/how-to-convert-latitude-or-longitude-to-meters
+        /// </summary>
+        /// <param name="lat1"></param>
+        /// <param name="long1"></param>
+        /// <param name="lat2"></param>
+        /// <param name="long2"></param>
+        /// <returns></returns>
         public double CalcDistance(double lat1, double long1, double lat2, double long2)
         {
             //For calcs
