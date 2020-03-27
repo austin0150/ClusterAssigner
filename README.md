@@ -17,3 +17,8 @@ A small program to assign geographic X,Y coordinates to clusters
   
 ### The application will calculate which of the "clusters" that each of the records from the first file are closest to and assign them to the appropriate "cluster id" (1, 2, 3.. etc)  
 ### The application will then output a copy of Records.csv with the "ClusterID" and "DistanceToCluster" columns added and populated.  
+  
+### The Records.csv and Clusters.csv files must be in the same directory as the executable.
+### The data in any of the columns of Records.csv other than Latitude,Longitude, and Location can change without affecting the program output, as long as the same number of columns exists.  
+
+### I plan to refine this application and make it more versitle when I have time.
