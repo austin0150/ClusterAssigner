@@ -4,7 +4,7 @@ A small program to assign geographic X,Y coordinates to clusters
 ## This is a program that I built to aid in a project for my statistics class.  
   
 ## It can help you take a large set of data and assign clusters to the datapoints. Then you can visualize with tools like Tableau.  
-![CLUSTER MAP](Images/Cluster.png)  
+![CLUSTER MAP](https://github.com/austin0150/ClusterAssigner/blob/master/Images/Cluster.PNG?raw=true)  
 
 ### When given a csv file named Records.csv contining data like this...  
  Date,Year,Month,Weekday,Hour,Primary Type,Latitude,Longitude,Location,State  
