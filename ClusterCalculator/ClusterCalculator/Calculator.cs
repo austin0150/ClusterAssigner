@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Windows.Forms;
 
 namespace ClusterCalculator
 {
@@ -9,15 +10,129 @@ namespace ClusterCalculator
     {
         public List<Point> ClusterCenters;
         public List<Record> Records;
+        public string InputFileName;
+        public string OutputFileName;
 
         public Calculator()
         {
+            InitCalculator();
             ClusterCenters = new List<Point>();
             Records = new List<Record>();
             LoadCenters();
             LoadRecords();
             ProcessData();
             OutputData();
+        }
+
+        public int InitCalculator()
+        {
+            bool badData = true;
+            string[] headers;
+            string tempString = "";
+
+            Console.WriteLine("Welcome to the Cluster Calculator");
+            Console.WriteLine("---------------------------------- \n");
+            Console.WriteLine("Press enter to choose the .csv file you want to evaluate");
+            Console.ReadLine();
+            while(badData)
+            {
+                InputFileName = SelectFile();
+
+                if(InputFileName == "")
+                {
+                    Console.WriteLine("Invalid selection, must select a file to open");
+                    Console.WriteLine("Press enter to continue...");
+                    Console.ReadLine();
+                }
+                else
+                {
+                    badData = false;
+                }
+            }
+
+            Console.WriteLine("Press enter to select the folder for the modified file to be placed in");
+            Console.ReadLine();
+            badData = true;
+
+            while(badData)
+            {
+                OutputFileName = SelectFolder();
+
+                if(OutputFileName == "")
+                {
+                    Console.WriteLine("Invalid selection, must select a folder to use");
+                    Console.WriteLine("Press enter to continue...");
+                    Console.ReadLine();
+                }
+                else
+                {
+                    badData = false;
+                }
+            }
+
+            Console.WriteLine("Please enter the file name to assign to the new CSV file (without the file extension)");
+            tempString = Console.ReadLine();
+            badData = true;
+            
+            while(badData)
+            {
+                if(tempString == "")
+                {
+                    Console.WriteLine("Invalid file name, please enter a valid file name");
+                    Console.ReadLine();
+                }
+                else
+                {
+                    badData = false;
+                }
+            }
+
+            headers = FileOps.GetHeaders(InputFileName);
+            if(headers == null)
+            {
+                Console.WriteLine("Press enter to exit the program...");
+                Console.ReadLine();
+
+                return 0;
+            }
+
+
+        }
+
+        public string SelectFile()
+        {
+            string fileToMod = "";
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            openFileDialog.InitialDirectory = "c:\\";
+            openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            openFileDialog.FilterIndex = 2;
+            openFileDialog.RestoreDirectory = true;
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                fileToMod = openFileDialog.FileName;
+            }
+
+            return fileToMod;
+        }
+
+        public string SelectFolder()
+        {
+            string folderPath = "";
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+
+            fbd.Description = "Select where to create the new file.";
+            fbd.ShowNewFolderButton = true;
+
+            DialogResult result = fbd.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                folderPath = fbd.SelectedPath;
+            }
+
+            return folderPath;
         }
 
         public void ProcessData()
