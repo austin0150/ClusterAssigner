@@ -12,6 +12,10 @@ namespace ClusterCalculator
         public List<Record> Records;
         public string InputFileName;
         public string OutputFileName;
+        public bool UseClusterRadius;
+        public double ClusterRadius;
+        public int LatColumn;
+        public int LongColumn;
 
         public Calculator()
         {
@@ -32,11 +36,13 @@ namespace ClusterCalculator
 
             Console.WriteLine("Welcome to the Cluster Calculator");
             Console.WriteLine("---------------------------------- \n");
+
+            //Get input file
             Console.WriteLine("Press enter to choose the .csv file you want to evaluate");
             Console.ReadLine();
             while(badData)
             {
-                InputFileName = SelectFile();
+                InputFileName = FileOps.SelectFile();
 
                 if(InputFileName == "")
                 {
@@ -50,13 +56,14 @@ namespace ClusterCalculator
                 }
             }
 
+            //Get output directory
             Console.WriteLine("Press enter to select the folder for the modified file to be placed in");
             Console.ReadLine();
             badData = true;
 
             while(badData)
             {
-                OutputFileName = SelectFolder();
+                OutputFileName = FileOps.SelectFolder();
 
                 if(OutputFileName == "")
                 {
@@ -70,6 +77,7 @@ namespace ClusterCalculator
                 }
             }
 
+            //Get the output file name
             Console.WriteLine("Please enter the file name to assign to the new CSV file (without the file extension)");
             tempString = Console.ReadLine();
             badData = true;
@@ -84,6 +92,7 @@ namespace ClusterCalculator
                 else
                 {
                     badData = false;
+                    OutputFileName += ("\\" + tempString + ".csv");
                 }
             }
 
@@ -96,44 +105,87 @@ namespace ClusterCalculator
                 return 0;
             }
 
-
-        }
-
-        public string SelectFile()
-        {
-            string fileToMod = "";
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-
-            openFileDialog.InitialDirectory = "c:\\";
-            openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-            openFileDialog.FilterIndex = 2;
-            openFileDialog.RestoreDirectory = true;
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            Console.WriteLine("\nThe following columns have been detected...");
+            for(int i = 0; i < headers.Length; i++)
             {
-                fileToMod = openFileDialog.FileName;
+                Console.WriteLine(i + ": " + headers[i]);
             }
 
-            return fileToMod;
-        }
-
-        public string SelectFolder()
-        {
-            string folderPath = "";
-            FolderBrowserDialog fbd = new FolderBrowserDialog();
-
-            fbd.Description = "Select where to create the new file.";
-            fbd.ShowNewFolderButton = true;
-
-            DialogResult result = fbd.ShowDialog();
-
-            if (result == DialogResult.OK)
+            //Get the column that contains Latitude
+            Console.WriteLine("Enter the column number that contains the Latitude");
+            try
             {
-                folderPath = fbd.SelectedPath;
+                LatColumn = Convert.ToInt32(Console.ReadLine());
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("ERROR in Input");
+                Console.WriteLine(e.Message);
+                FileOps.WriteToLog(e.Message);
+                return 0;
             }
 
-            return folderPath;
+            //Get the column that contains the Longitude
+            Console.WriteLine("Enter the Column number that contains the Longitude");
+            try
+            {
+                LongColumn = Convert.ToInt32(Console.ReadLine());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("ERROR in Input");
+                Console.WriteLine(e.Message);
+                FileOps.WriteToLog(e.Message);
+            }
+
+            //Ask if using cluster radius
+            Console.WriteLine("Would you like to set a maximum radius for each cluster? (y/n)");
+            badData = true;
+            while(badData)
+            {
+                tempString = Console.ReadLine();
+                if (tempString.ToLower() == "y")
+                {
+                    badData = false;
+                    UseClusterRadius = true;
+                }
+                else if (tempString.ToLower() == "n")
+                {
+                    badData = false;
+                    UseClusterRadius = false;
+                }
+                else
+                {
+                    Console.WriteLine("InvalidInput, please enter \'y\' or \'n\'");
+                }
+            }
+
+            //Get raiud distance if in use
+            if(UseClusterRadius)
+            {
+                Console.WriteLine("Enter the cluster radius");
+                badData = true;
+                while(badData)
+                {
+                    try
+                    {
+                        ClusterRadius = Convert.ToDouble(Console.ReadLine());
+                        badData = false;
+                    }
+                    catch(Exception e)
+                    {
+                        Console.WriteLine("Invalid entry");
+                        FileOps.WriteToLog("Invalid entry for cluster radius");
+                    }
+                }
+            }
+
+            return 1;
         }
+
+        
+
+        
 
         public void ProcessData()
         {
