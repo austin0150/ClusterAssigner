@@ -4,7 +4,7 @@ This is a program that will take a csv file containing Longitude and Latitude, a
 I built this program to help deal with a large dataset for a statistics class assignment.  
 
 ## It can help you take a large set of data and assign clusters to the datapoints. Then you can visualize with tools like Tableau.  
-![CLUSTER MAP](Images/Cluster.png)  
+![CLUSTER MAP](https://github.com/austin0150/ClusterAssigner/blob/master/Images/Cluster.PNG?raw=true)  
 
 ## The program will take a provided csv file and add two columns, "Cluster ID" and "Distance to Cluster"  
 
@@ -40,4 +40,3 @@ lat,long
   
 ### The application will calculate which of the "clusters" that each of the records from the first file are closest to and assign them to the appropriate "cluster id" (1, 2, 3.. etc)  
 ### The application will then output a copy of Records.csv with the "ClusterID" and "DistanceToCluster" columns added and populated.  
- 
