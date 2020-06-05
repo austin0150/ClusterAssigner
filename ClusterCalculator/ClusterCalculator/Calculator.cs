@@ -24,29 +24,33 @@ namespace ClusterCalculator
         {
             ClusterCenters = new List<Point>();
             Records = new List<Record>();
-            LoadCenters();
-            LoadRecords();
-            ProcessData();
-            OutputData();
         }
 
         
 
         public void ProcessData()
         {
-            foreach(Record record in Records)
+            Records = FileOps.ReadRecords(InputFileName, LongColumn, LatColumn);
+            ClusterCenters = FileOps.ReadCenters(CenterFile, CenterLongColumn, CenterLatColumn);
+
+            for(int i = 0; i < Records.Count; i++)
             {
-                ChooseCluster(record);
+                Record record = Records[i];
+                ChooseCluster(ref record);
             }
+
+            FileOps.OutputData(this.OutputFileName, Records, (FileOps.GetHeader(this.InputFileName) + ",Cluster ID,Distance To Cluster"));
         }
 
  
+
+
 
         /// <summary>
         /// Assigns the correct cluster to the given Record
         /// </summary>
         /// <param name="record"></param>
-        public void ChooseCluster(Record record)
+        public void ChooseCluster(ref Record record)
         {
             double SmallestDistance = int.MaxValue;
             int bestCluster = 1;
@@ -61,8 +65,21 @@ namespace ClusterCalculator
                 }
             }
 
-            record.ClusterID = bestCluster;
-            record.DistToCluster = SmallestDistance;
+
+            if(UseClusterRadius)
+            {
+                if(SmallestDistance<=ClusterRadius)
+                {
+                    record.ClusterID = bestCluster;
+                    record.DistToCluster = SmallestDistance;
+                }
+                else
+                {
+                    record.ClusterID = -1;
+                    record.DistToCluster = -1;
+                }
+            }
+           
 
             return;
         }

@@ -16,7 +16,9 @@ namespace ClusterCalculator
             {
                 return;
             }
+            calc.ProcessData();
 
+           
 
         }
 

@@ -166,6 +166,7 @@ namespace ClusterCalculator
                 }
             }
 
+            badData = true;
             //Get the file for cluster centers
             Console.WriteLine("Press enter to choose the .csv file that contains the cluster locations");
             Console.ReadLine();

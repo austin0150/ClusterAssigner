@@ -10,6 +10,6 @@ namespace ClusterCalculator
         public double Latitude;
         public double Longitude;
         public int ClusterID;
-        public double DistToCluster;
+        public double DistToCluster = -1;
     }
 }
