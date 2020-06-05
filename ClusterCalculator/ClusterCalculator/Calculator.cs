@@ -2,119 +2,55 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Windows.Forms;
 
 namespace ClusterCalculator
 {
-    class Calculator
+    public class Calculator
     {
         public List<Point> ClusterCenters;
         public List<Record> Records;
+        public string InputFileName;
+        public string OutputFileName;
+        public string CenterFile;
+        public bool UseClusterRadius;
+        public double ClusterRadius;
+        public int LatColumn;
+        public int LongColumn;
+        public int CenterLatColumn;
+        public int CenterLongColumn;
 
         public Calculator()
         {
             ClusterCenters = new List<Point>();
             Records = new List<Record>();
-            LoadCenters();
-            LoadRecords();
-            ProcessData();
-            OutputData();
         }
+
+        
 
         public void ProcessData()
         {
-            foreach(Record record in Records)
+            Records = FileOps.ReadRecords(InputFileName, LongColumn, LatColumn);
+            ClusterCenters = FileOps.ReadCenters(CenterFile, CenterLongColumn, CenterLatColumn);
+
+            for(int i = 0; i < Records.Count; i++)
             {
-                ChooseCluster(record);
-            }
-        }
-
-        /// <summary>
-        /// Writes the new record CSV data to file
-        /// </summary>
-        public void OutputData()
-        {
-            string tempLine;
-            string[] lines = new string[Records.Count + 1];
-
-            lines[0] = "Date,Year,Month,Weekday,Hour,Primary Type,Latitude,Longitude,Location,State,Cluster,DistanceToCluster";
-
-            for (int i = 0; i < Records.Count; i++)
-            {
-                tempLine = Records[i].Date + "," + Records[i].Year + "," + Records[i].Month + "," + Records[i].Weekday + "," + Records[i].Hour + "," + Records[i].CrimeDesc + "," + Records[i].Latitude + "," + Records[i].Longitude + "," + Records[i].Location + "," + Records[i].State + "," + Records[i].ClusterID + "," + Records[i].DistToCluster;
-                lines[i + 1] = tempLine;
+                Record record = Records[i];
+                ChooseCluster(ref record);
             }
 
-            File.WriteAllLines(@".\Results.csv", lines);
+            FileOps.OutputData(this.OutputFileName, Records, (FileOps.GetHeader(this.InputFileName) + ",Cluster ID,Distance To Cluster"));
         }
 
-        /// <summary>
-        /// Loads the records from the CSV into memory
-        /// </summary>
-        public void LoadRecords()
-        {
-            string[] lines;
-            lines = File.ReadAllLines(@".\Records.csv");
-            string[] tempLine;
-
-            Record newRecord;
-
-            foreach(var line in lines)
-            {
-                if (line.Contains("Year"))
-                {
-                    continue;
-                }
-
-                tempLine = line.Split(',');
-                newRecord = new Record();
-
-                newRecord.Date = tempLine[0];
-                newRecord.Year = tempLine[1];
-                newRecord.Month = tempLine[2];
-                newRecord.Weekday = tempLine[3];
-                newRecord.Hour = tempLine[4];
-                newRecord.CrimeDesc = tempLine[5];
-                newRecord.Latitude = Convert.ToDouble(tempLine[6]);
-                newRecord.Longitude = Convert.ToDouble(tempLine[7]);
-                newRecord.Location = tempLine[8] + tempLine[9];
-                newRecord.State = tempLine[10];
-
-                Records.Add(newRecord);
-            }
-        }
-
-        /// <summary>
-        /// Loads the cluster centers from the CSV into memory
-        /// </summary>
-        public void LoadCenters()
-        {
-            string[] lines;
+ 
 
 
-            lines = File.ReadAllLines(@".\Clusters.csv");
-
-            string[] tempLine;
-            double[] tempDubs;
-
-            foreach (var line in lines)
-            {
-                Point newPoint = new Point();
-                tempDubs = new double[3];
-                tempLine = line.Split(',');
-
-                newPoint.Latitude = Convert.ToDouble(tempLine[0]);
-                newPoint.Longitude = Convert.ToDouble(tempLine[1]);
-                newPoint.ClusterID = Convert.ToInt32(tempLine[2]);
-
-                ClusterCenters.Add(newPoint);
-            }
-        }
 
         /// <summary>
         /// Assigns the correct cluster to the given Record
         /// </summary>
         /// <param name="record"></param>
-        public void ChooseCluster(Record record)
+        public void ChooseCluster(ref Record record)
         {
             double SmallestDistance = int.MaxValue;
             int bestCluster = 1;
@@ -129,8 +65,27 @@ namespace ClusterCalculator
                 }
             }
 
-            record.ClusterID = bestCluster;
-            record.DistToCluster = SmallestDistance;
+
+            if(UseClusterRadius)
+            {
+                if(SmallestDistance<=ClusterRadius)
+                {
+                    record.ClusterID = bestCluster;
+                    record.DistToCluster = SmallestDistance;
+                }
+                else
+                {
+                    record.ClusterID = -1;
+                    record.DistToCluster = -1;
+                }
+            }
+            else
+            {
+                record.ClusterID = bestCluster;
+                record.DistToCluster = SmallestDistance;
+            }
+
+            FileOps.WriteToLog("Record processed - Lat:" + record.Latitude + ", Long:" + record.Longitude + ", ID:" + record.ClusterID + ", Distance to Cluster:" + record.DistToCluster);
 
             return;
         }
