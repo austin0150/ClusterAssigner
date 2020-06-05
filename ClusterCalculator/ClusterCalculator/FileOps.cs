@@ -14,6 +14,7 @@ namespace ClusterCalculator
         {
             if(!File.Exists(fileName))
             {
+                FileOps.WriteToLog("ERROR ACCESSING INPUT FILE");
                 Console.WriteLine("ERROR ACCESSING INPUT FILE");
                 return null;
             }
@@ -25,6 +26,22 @@ namespace ClusterCalculator
             string[] headers = line.Split(',');
 
             return headers;
+        }
+
+        public static string GetHeader(string fileName)
+        {
+            if (!File.Exists(fileName))
+            {
+                FileOps.WriteToLog("ERROR ACCESSING INPUT FILE");
+                Console.WriteLine("ERROR ACCESSING INPUT FILE");
+                return null;
+            }
+
+            StreamReader reader = new StreamReader(fileName);
+
+            string line = reader.ReadLine();
+
+            return line;
         }
 
         public static void WriteToLog(string line)
@@ -89,6 +106,84 @@ namespace ClusterCalculator
             }
 
             return folderPath;
+        }
+
+        public static List<Point> ReadCenters(string fileName, int longCol, int latCol)
+        {
+            string[] lines;
+            lines = File.ReadAllLines(fileName);
+            string[] tempLine;
+            List<Point> pointList = new List<Point>();
+
+            Point newPoint;
+
+            foreach (var line in lines)
+            {
+                if (lines[0] == line)
+                {
+                    continue;
+                }
+
+                tempLine = line.Split(',');
+                newPoint = new Point();
+
+                newPoint.Latitude = Convert.ToDouble(tempLine[latCol]);
+                newPoint.Longitude = Convert.ToDouble(tempLine[longCol]);
+                newPoint.ClusterID = pointList.Count;
+
+                pointList.Add(newPoint);
+                FileOps.WriteToLog("Read Cluster Center: Longitude-" + newPoint.Longitude + ", Latitude-" + newPoint.Latitude + ", Cluster ID-" + newPoint.ClusterID);
+            }
+
+            return pointList;
+        }
+
+        public static List<Record> ReadRecords(string fileName, int longCol, int latCol)
+        {
+            List<Record> records = new List<Record>();
+            string[] lines;
+            lines = File.ReadAllLines(fileName);
+            string[] tempLine;
+
+            Record newRecord;
+
+            foreach (var line in lines)
+            {
+                if (line == lines[0])
+                {
+                    continue;
+                }
+
+                tempLine = line.Split(',');
+                newRecord = new Record();
+
+                newRecord.data = tempLine;
+                newRecord.Latitude = Convert.ToDouble(tempLine[latCol]);
+                newRecord.Longitude = Convert.ToDouble(tempLine[longCol]);
+                records.Add(newRecord);
+            }
+
+            return records;
+        }
+
+        public static int OutputData(string fileName, List<Record> records, string header)
+        {
+            StreamWriter writer = File.AppendText(fileName);
+
+            writer.Write(header + "\n");
+
+            foreach (var Record in records)
+            {
+                for(int i =0; i < Record.data.Length;i++)
+                {
+                    writer.Write(Record.data[i]);
+                    writer.Write(",");
+                }
+                writer.Write(Record.ClusterID + "," + Record.DistToCluster);
+                writer.Write("\n");
+            }
+
+            return 1;
         }
     }
 }

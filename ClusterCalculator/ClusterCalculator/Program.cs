@@ -10,7 +10,13 @@ namespace ClusterCalculator
         [STAThread]
         static void Main(string[] args)
         {
-            Calculator calc = new Calculator();
+            Initializer init = new Initializer();
+            Calculator calc = init.Init();
+            if(calc.Equals(null))
+            {
+                return;
+            }
+
 
         }
 
