@@ -1,8 +1,8 @@
-# ClusterAssigner
-A small program to assign geographic X,Y coordinates to clusters
+# ClusterAssigner  
+## Description  
+This is a program that will take a csv file containing Longitude and Latitude, and add a column containing a cluster ID and distance to that cluster center, given a second csv file that contains coordinates of cluster centers.  
+I built this program to help deal with a large dataset for a statistics class assignment.  
 
-## This is a program that I built to aid in a project for my statistics class.  
-  
 ## It can help you take a large set of data and assign clusters to the datapoints. Then you can visualize with tools like Tableau.  
 ![CLUSTER MAP](Images/Cluster.png)  
 
