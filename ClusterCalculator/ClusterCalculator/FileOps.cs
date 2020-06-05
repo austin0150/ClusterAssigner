@@ -44,6 +44,13 @@ namespace ClusterCalculator
             return line;
         }
 
+        public static void InitLogger()
+        {
+            DateTime time = DateTime.Now;
+
+            LogFileName = ".//LogFile_" + time.Month + "_" + time.Day + "_" + time.Year + ".txt";
+        }
+
         public static void WriteToLog(string line)
         {
             DateTime time = DateTime.Now;

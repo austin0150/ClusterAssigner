@@ -10,6 +10,7 @@ namespace ClusterCalculator
         [STAThread]
         static void Main(string[] args)
         {
+            FileOps.InitLogger();
             Initializer init = new Initializer();
             Calculator calc = init.Init();
             if(calc.Equals(null))
@@ -18,7 +19,7 @@ namespace ClusterCalculator
             }
             calc.ProcessData();
 
-           
+            Console.WriteLine("Program completed, Press enter to exit");
 
         }
 

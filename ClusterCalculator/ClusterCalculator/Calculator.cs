@@ -79,7 +79,13 @@ namespace ClusterCalculator
                     record.DistToCluster = -1;
                 }
             }
-           
+            else
+            {
+                record.ClusterID = bestCluster;
+                record.DistToCluster = SmallestDistance;
+            }
+
+            FileOps.WriteToLog("Record processed - Lat:" + record.Latitude + ", Long:" + record.Longitude + ", ID:" + record.ClusterID + ", Distance to Cluster:" + record.DistToCluster);
 
             return;
         }
